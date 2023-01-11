@@ -1,7 +1,7 @@
 # Breaking Nostr
 *attacking the claimed censorship-resistant alternative to Twitter*
 
-*by [lucash.dev](https://github.com/lucash.dev)*
+*by [lucash-dev](https://github.com/lucash-dev)*
 
 ## Introduction
 
