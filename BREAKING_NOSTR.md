@@ -325,3 +325,123 @@ A better, more precise description for Nostr might be **"a protocol for Twitter-
 
 I believe there's genuine effort and good-faith interest behind Nostr, and hope that
 exposing its weaknesses in this article -- and other future contributions -- will help improve the protocol, and perhaps find different use cases for it.
+
+-----
+
+# Further Thoughts
+
+## Claim by claim Analysis
+
+Let's take a look at individual claims in the Nostr documentation:
+
+- *The simplest open protocol that is able to create a censorship-resistant global "social" network once and for all* that is a very bold claim (or claims). As we've seen above it's
+unclear how Nostr is "censorship-resistant", the term is never defined in the docs and the protocol definitely isn't CR in the sense Bitcoin is, or any of the other projects claiming CR. Not sure the part about "once and for all" has any objective meaning.
+
+- *It doesn't rely on any trusted central server, hence it is resilient:* that's kind of deceptive. Nostr relies on a number of trusted servers, and it's unclear how traffic and storage will end up being distributed among those servers, which muddies the trust model and makes evaluating such claims impossible.
+
+- *It is based on cryptographic keys and signatures, so it is tamperproof:* this is the one claim in the document that is completely correct. Must note that this is hardly an unique feature.
+
+- *It does not rely on P2P techniques, therefore it works:* this is probably the silliest claim in the whole document. There are a number of successful P2P protocols, and a number
+of unsuccessful protocols that aren't P2P. There's no reason to believe not being P2P is a requirement for a "censorship-resistant global network". In fact the reverse is intuitively
+true -- most protocols with a reasonable cliam to being CR are indeed P2P.
+
+### The Problems with Twitter:
+
+- *Twitter has ads:* Nostr offers no way of preventing ads from being included by
+   relays, or that the inclusion of ads be disclosed. As long as ads fits the requested filters, relays are free to include whatever they want. This is particularly true of tag queries. The suggestion that clients might pay relays to publish events means essentially every event will be an ad. Events might be differently prioritized, delayed or otherwise manipulated based on advertising budget, in multiple opaque ways.
+   **Conclusion: issue not addressed by the protocol.**
+
+- *Twitter uses bizarre techniques to keep you addicted:* as with ads, there's nothing
+   in the protocol to prevent relays from using whatever algorithm to prioritize or
+   treat differently events based on their content or authorship. That means
+   relays have every opportunity to use the same "bizarre techniques" as Twitter,
+   and no obligation to disclose such practices.
+   **Conclusion: issue not addressed by the protocol.**
+
+- *Twitter doesn't show an actual historical feed from people you follow:* this one is
+  a bit weird. I used Twitter for several years, and AFAICT if you follow a small number
+  of people, your feed will be in fact each post from each one of them. As you start
+  following more people, and the feed becomes noisy, it applies some secret algorithm
+  to filter and rank the posts. Users still have the option to go each people they follow
+  and see their historical feed. Twitter API allows for easy aggregation of
+  all posts by people you follow and ranking or filtering them as the client sees fit. **Conclusion: unclear to what extent this is even an issue.**
+
+- *Twitter bans people:* this one is clearly a huge issue with Twitter and other
+  centralized platforms. What isn't so clear is how Nostr addresses it. All documentation
+  makes it clear that individual relays can as easily ban users as Twitter, and
+  the only way around it mentioned is to find another relay that hasn't banned you.
+  While you can easily carry over your posts and identity to other relays, it's not
+  obvious that users who follow you will be able to find the new relay -- all ways
+  of publishing new information about relays are subject to the same censorship/ban
+  as other events. It's hard to see how much Nostr improves over just having accounts
+  in multiple platforms and validating each with PGP signatures -- and perhaps having
+  a list of platforms/usernames hosted in a domain you own. At best Nostr makes
+  that experience of switching relays/platforms less cumbersome (which is in fact the *only* benefit remotely related to censorship resistance offered), but it hardly *solves* the issue, in any way that can meaningfully be called "censorship resistant". Please see above for more details. **Conclusion: issue marginally improved by Nostr.**
+
+- *Twitter shadowbans people:* shadow banning is just banning without being explicit.
+  While explicit bans are relatively easier to counteract -- since both followers and
+  authors are aware of the censorship -- shadow bans by means of dropping or de-prioritizing
+  content is harder to detect. Nostr relays have as much opportunity to shadowban
+  users as centralized platforms. Worse, since there is no way of knowing who your
+  followers are, verifying that they are in fact receiving your events is impossible.
+  With centralized platforms, reach is at least measured and reported, and while
+  these reports can be manipulated as well, they offer at least some internal consistency
+  checks. As is implemented today, Nostr removes even this modicum of protection.
+  **Conclusion: issue not solved by Nostr, in some aspects made marginally worse.**
+
+- *Twitter has a lot of spam:* Nostr protocol vaguely mentions the possibility of
+   using anti-spam techniques, with some partially implemented by relays. Of special
+   interest is the use of Proof-of-Work (HashCash), which is only partially specified.
+   While using HashCash could be a huge improvement in terms of spam-protection, nothing
+   prevents a centralized platform from implementing it. More importantly a Twitter
+   client using the API can implement it client-side (though without specific platform
+     support it might be cumbersome).
+   **Conclusion: marginally improved by Nostr. Easy for fully centralized platforms to copy the same solution though.**
+
+
+### The problem with Mastodon and similar programs
+
+- *User identities are attached to domain names controlled by third-parties*: Nostr indeed
+  adds an improvement on this issue. However it was already possible to address it in an
+  ad-hoc manner using PGP and DNS or similar. See above.
+
+- *Server owners can ban you, just like Twitter; Server owners can also block other servers:* issue not solved by Nostr. See above.
+
+- *Migration between servers is an afterthought and can only be accomplished if servers cooperate. It doesn't work in an adversarial environment (all followers are lost):* this is
+  definitely an area where Nostr brings *improvement*, though hardly allows for anything
+  that wasn't already possible. Please note that Nostr *also doesn't allow seamless migrations in adversarial environments*. Every one following you will stop following you
+  if your single relay drops you and doesn't want to help spreading the word about where
+  to find you now. If you post to multiple relays, that's equivalent to posting to multiple
+  Mastodon instances. **Conclusion: Nostr definitely improves user experience here, but  doesn't make anything essentially different or unique. A PR to Mastodon could fix it as well.**
+
+- *There are no clear incentives to run servers ...run by enthusiasts ... users are subject to the despotism of a single person ... and they can't migrate out:* other than the part
+about migration (addressed above) every single thing applies to Nostr as well. Both Mastodon instances and Nostr relays can be made to require payment. **Conclusion: issue not addressed by Nostr.**
+
+- *Since servers tend to be run amateurishly, they are often abandoned after a while — which is effectively the same as banning everybody:* **exactly same issues in Nostr**.
+
+- *It doesn't make sense to have a ton of servers if updates from every server will have to be painfully pushed (and saved!) to a ton of other servers. This point is exacerbated by the fact that servers tend to exist in huge numbers, therefore more data has to be passed to more places more often:* exactly same issue exists in Nostr, with the added issue
+that there isn't an implied practice of only posting to a single or a few relays. Either
+clients will need to pull events from a large number of relays, or authors will have
+to push events to a large number of relays -- or everyone posts to a handful of huge
+relays, with accompanying risks of centralization, censorship, manipulation, and barrier to enter the market. Since there isn't any incentive to achieve specific topologies, most likely a scenario of mass broadcast will ensue. **Conclusion: issue not solved by Nostr. Possibly made worse.**
+
+
+## Responses to the Above Discussions, and a new Conclusion
+
+This document has been shared with the author of the Nostr Protocol (who answered kindly to it, but didn't provide specific comments) and a number of people via it's Telegram Channel.
+
+The responses varied from genuine interest, to indifference, to outright anger.
+
+My general impression is that **Nostr developers are trying to solve an entirely different set of problems than the ones I'm interested in.**
+
+While they refer to them by similar names (*censorship-resistance*) their definition of the problem isn't the same as mine (or any I can find in other popular projects or in the scientific literature) -- which causes significant (and unnecessary) confusion. It must be noted that at least part
+of the popularity of the protocol arises from that very confusion.
+
+Moving forward, I think it is important that people clearly understand that **Nostr and Bitcoin are completely different** -- they don't share
+a security model or even a definition of censorship-resistance.
+
+As for my own work, I realize at this time trying to integrate my projects with Nostr or building on top of it is just a distraction from my own goals -- *building censorship-resistant general-purpose network in the a sense similar to how Bitcoin is CR*. **Therefore I'll probably not spend much
+time contributing to Nostr-related projects in the near future** -- though that might change as my work and Nostr evolve.
+
+
+
